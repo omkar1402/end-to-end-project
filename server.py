@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
  
 app = Flask(__name__)
@@ -19,23 +19,23 @@ def home():
 def form():
     return render_template("form.html")
 
-# Add data to MongoDB route 
-@app.route('/add_data', methods=['POST']) 
-def add_data(): 
-	try: 
-		conn = MongoClient() 
-		print("Connected successfully!!!") 
-	except: 
-		print("Could not connect to MongoDB") 
+# # Add data to MongoDB route 
+# @app.route('/add_data', methods=['POST']) 
+# def add_data(): 
+# 	try: 
+# 		conn = MongoClient() 
+# 		print("Connected successfully!!!") 
+# 	except: 
+# 		print("Could not connect to MongoDB") 
 
-	# database 
-	db = conn.Test 
+# 	# database 
+# 	db = conn.Test 
 
-	# Created or Switched to collection names: my_gfg_collection 
-	collection = db.test_coll 
+# 	# Created or Switched to collection names: my_gfg_collection 
+# 	collection = db.test_coll 
 
-	data=request.json
-	collection.insert_one(data)
+# 	data=request.json
+# 	collection.insert_one(data)
 	
 	# emp_rec1 = { 
 	# 		"name":"Mr.Geek", 
@@ -57,8 +57,25 @@ def add_data():
 	
     # # Insert data into MongoDB 
     # collection.insert_one(data) 
-	return 'Data added to MongoDB'
+	# return 'Data added to MongoDB'
   
+
+client = MongoClient('localhost', 27017)
+
+db = client.flask_db
+todos = db.todos
+
+@app.route('/add_data', methods=('GET', 'POST'))
+def index():
+    if request.method=='POST':
+        content = request.form['content']
+        degree = request.form['degree']
+        todos.insert_one({'content': content, 'degree': degree})
+        return redirect(url_for('index'))
+
+    all_todos = todos.find()
+    return render_template('add_data.html', todos=all_todos)
+
 if __name__ == "__main__":
     app.run()
 
