@@ -1,119 +1,63 @@
 from flask import Flask, render_template, request, redirect, url_for
 from pymongo import MongoClient
- 
+import logging
+
 app = Flask(__name__)
- 
 
-try: 
-	conn = MongoClient() 
-	print("Connected successfully!!!") 
-except: 
-	print("Could not connect to MongoDB") 
+# Setup logging
+logging.basicConfig(level=logging.DEBUG)
 
+# MongoDB connection
+try:
+    client = MongoClient('localhost', 27017)
+    logging.info("Connected successfully to MongoDB!")
+except Exception as e:
+    logging.error(f"Could not connect to MongoDB: {e}")
+
+# Access the database and collection
+db = client['ProjectDB']
+form_data = db['form1']
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-@app.route("/form")
+@app.route("/form", methods=['GET', 'POST'])
 def form():
-    return render_template("form.html")
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        country = request.form.get('country')
+        gender = request.form.get('gender')
+        subscribe = request.form.get('subscribe', 'no')  # Default to 'no' if not checked
 
-# # Add data to MongoDB route 
-# @app.route('/add_data', methods=['POST']) 
-# def add_data(): 
-# 	try: 
-# 		conn = MongoClient() 
-# 		print("Connected successfully!!!") 
-# 	except: 
-# 		print("Could not connect to MongoDB") 
+        if not all([name, email, country, gender]):
+            logging.warning("Incomplete form submission")
+            return redirect(url_for('form'))
 
-# 	# database 
-# 	db = conn.Test 
+        document = {
+            'name': name,
+            'email': email,
+            'country': country,
+            'gender': gender,
+            'subscribe': subscribe
+        }
+        logging.info(f"Inserting document: {document}")
 
-# 	# Created or Switched to collection names: my_gfg_collection 
-# 	collection = db.test_coll 
+        try:
+            form_data.insert_one(document)
+            logging.info("Document inserted successfully")
+        except Exception as e:
+            logging.error(f"Error inserting document: {e}")
 
-# 	data=request.json
-# 	collection.insert_one(data)
-	
-	# emp_rec1 = { 
-	# 		"name":"Mr.Geek", 
-	# 		"eid":24, 
-	# 		"location":"delhi"
-	# 		} 
+        return redirect(url_for('form'))
 
-	# # Insert Data 
-	# rec_id1 = collection.insert_one(emp_rec1) 
+    all_form = form_data.find()
+    return render_template("form.html", form_data=all_form)
 
-	# print("Data inserted with record ids",rec_id1) 
-
-	# # Printing the data inserted 
-	# cursor = collection.find() 
-	# for record in cursor: 
-	# 	print(record) 
-	# 	# Get data from request 
-	# 	data = request.json 
-	
-    # # Insert data into MongoDB 
-    # collection.insert_one(data) 
-	# return 'Data added to MongoDB'
-  
-
-client = MongoClient('localhost', 27017)
-
-db = client.flask_db
-todos = db.todos
-
-@app.route('/add_data', methods=('GET', 'POST'))
-def index():
-    if request.method=='POST':
-        content = request.form['content']
-        degree = request.form['degree']
-        todos.insert_one({'content': content, 'degree': degree})
-        return redirect(url_for('index'))
-
-    all_todos = todos.find()
-    return render_template('add_data.html', todos=all_todos)
+@app.route('/submit', methods=['POST'])
+def submit():
+    return render_template("submit.html")
 
 if __name__ == "__main__":
-    app.run()
-
-
-# # Python code to illustrate 
-# # inserting data in MongoDB 
-# # from pymongo import MongoClient 
-
-# # try: 
-# # 	conn = MongoClient() 
-# # 	print("Connected successfully!!!") 
-# # except: 
-# # 	print("Could not connect to MongoDB") 
-
-# # database 
-# db = conn.Test 
-
-# # Created or Switched to collection names: my_gfg_collection 
-# collection = db.test_coll 
-
-# emp_rec1 = { 
-# 		"name":"Mr.Geek", 
-# 		"eid":24, 
-# 		"location":"delhi"
-# 		} 
-# # emp_rec2 = { 
-# # 		"name":"Mr.Omkar", 
-# # 		"eid":14, 
-# # 		"location":"delhi"
-# # 		} 
-
-# # Insert Data 
-# rec_id1 = collection.insert_one(emp_rec1) 
-# # rec_id2 = collection.insert_one(emp_rec2) 
-
-# print("Data inserted with record ids",rec_id1) 
-
-# # Printing the data inserted 
-# cursor = collection.find() 
-# for record in cursor: 
-# 	print(record) 
+    app.run(debug=True)
