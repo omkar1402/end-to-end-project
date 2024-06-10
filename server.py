@@ -9,11 +9,14 @@ logging.basicConfig(level=logging.DEBUG)
 
 # MongoDB connection
 try:
-    client = MongoClient('localhost', 27017)
+    client = MongoClient('0.0.0.0', 27017)
+    # client = MongoClient("http://152.58.0.15:27017")
     logging.info("Connected successfully to MongoDB!")
 except Exception as e:
     logging.error(f"Could not connect to MongoDB: {e}")
 
+
+# db = client.animal_db
 # Access the database and collection
 db = client['ProjectDB']
 form_data = db['form1']
@@ -60,4 +63,5 @@ def submit():
     return render_template("submit.html")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
+

@@ -1,0 +1,22 @@
+version: "1.0"
+
+services:
+  web:
+    build: .
+    command: python -u server.py
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/end-to-end-project
+    links:
+      - db
+
+  db:
+    image: mongo:latest
+    hostname: localhost
+    environment:
+      - MONGO_INITDB_DATABASE=ProjectDB
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - 27017:27017
