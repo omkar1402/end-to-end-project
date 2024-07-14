@@ -102,14 +102,7 @@ This directory contains HTML templates used by the Flask application.
 
 The application uses Python's built-in `logging` module to log various events and errors. Logs are printed to the console for easy debugging.
 
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more details.
-
-## Contributing
-
-Feel free to open issues or submit pull requests if you have any improvements or bug fixes.
 
 ## Contact
 
-For any questions or suggestions, please contact [your-email@example.com].
+For any questions or suggestions, please contact **omkarane84@gmail.com**
