@@ -68,44 +68,44 @@
 </head>
 <body>
     <div class="form-container">
-        <h2>Sample Form</h2>
-        <form action="/form" method="POST">
+        <h2>{{ 'Edit Form' if is_edit else 'Sample Form' }}</h2>
+        <form action="{{ url_for('edit', _id=_id) if is_edit else url_for('create') }}" method="POST">
             <!-- Text input field -->
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name" required>
+            <input type="text" id="name" name="name" required value="{{ form_data['name'] if form_data else '' }}">
             
             <!-- Email input field -->
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
+            <input type="email" id="email" name="email" required value="{{ form_data['email'] if form_data else '' }}">
             
             <!-- Dropdown field -->
             <label for="country">Country:</label>
             <select id="country" name="country" required>
-                <option value="usa">USA</option>
-                <option value="canada">Canada</option>
-                <option value="uk">UK</option>
-                <option value="australia">Australia</option>
+                <option value="usa" {% if form_data and form_data['country'] == 'usa' %}selected{% endif %}>USA</option>
+                <option value="canada" {% if form_data and form_data['country'] == 'canada' %}selected{% endif %}>Canada</option>
+                <option value="uk" {% if form_data and form_data['country'] == 'uk' %}selected{% endif %}>UK</option>
+                <option value="australia" {% if form_data and form_data['country'] == 'australia' %}selected{% endif %}>Australia</option>
             </select>
             
             <!-- Radio buttons -->
             <div class="radio-group">
                 <label>Gender:</label>
-                <input type="radio" id="male" name="gender" value="male" required>
+                <input type="radio" id="male" name="gender" value="male" required {% if form_data and form_data['gender'] == 'male' %}checked{% endif %}>
                 <label for="male">Male</label>
-                <input type="radio" id="female" name="gender" value="female">
+                <input type="radio" id="female" name="gender" value="female" {% if form_data and form_data['gender'] == 'female' %}checked{% endif %}>
                 <label for="female">Female</label>
-                <input type="radio" id="other" name="gender" value="other">
+                <input type="radio" id="other" name="gender" value="other" {% if form_data and form_data['gender'] == 'other' %}checked{% endif %}>
                 <label for="other">Other</label>
             </div>
             
             <!-- Checkbox field -->
             <div class="checkbox-group">
-                <input type="checkbox" id="subscribe" name="subscribe" value="yes">
+                <input type="checkbox" id="subscribe" name="subscribe" value="yes" {% if form_data and form_data['subscribe'] == 'yes' %}checked{% endif %}>
                 <label for="subscribe">Subscribe to newsletter</label>
             </div>
             
             <!-- Submit button -->
-            <input type="submit" value="Submit">
+            <input type="submit" value="{{ 'Update' if is_edit else 'Submit' }}">
         </form>
     </div>
 </body>
