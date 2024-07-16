@@ -14,7 +14,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000
 
 # Define environment variable
-ENV FLASK_APP=app.py
+ENV FLASK_APP=server.py
 
 # Run app.py when the container launches
 CMD ["flask", "run", "--host=0.0.0.0"]
+
+
+# Commands to Run Docker container
+# docker build -t end-to-end-project:v1
+# docker run -p 5000:5000 end-to-end-project:v1 
