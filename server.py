@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 # MongoDB connection
 try:
-    client = MongoClient('mongodb://localhost:27017')
+    client = MongoClient('mongodb://adminuser:password123@192.168.65.3:32000/')
     logging.info("Connected successfully to MongoDB!")
     db = client['ProjectDB']
     collection = db['form1']
